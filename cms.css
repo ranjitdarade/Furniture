@@ -6,3 +6,5 @@
 .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 12px; }
 .card-actions .button { font-size: 10px; padding: 10px 7px; }
 .cms-open-local { margin-left: 8px; color: #9a322d; font-weight: 700; text-decoration: underline; }
+
+.section-manager{margin-top:20px;padding:16px 0;border-top:1px solid var(--line)}.section-list{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}.section-row{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#faf9f7;padding:5px 6px}.section-row.active{border-color:var(--gold);background:#f4f1eb}.section-select{flex:1;min-width:0;text-align:left;border:0;background:transparent;padding:7px 5px;color:var(--ink);font:500 12px/1.4 "DM Sans",Arial,sans-serif;cursor:pointer;overflow-wrap:anywhere}.section-move{display:flex;gap:4px}.section-move-button{width:29px;height:29px;border:1px solid var(--line);background:white;color:var(--ink);cursor:pointer}.section-move-button:disabled{opacity:.35;cursor:not-allowed}.section-edit{margin-top:15px;padding-top:12px;border-top:1px solid var(--line)}

@@ -31,3 +31,9 @@
 .cms-editing .cms-selected { outline: 3px solid #8b6f42 !important; outline-offset: 2px; cursor: pointer; }
 .cms-editing .cms-added-card.cms-selected { outline-offset: -4px; }
 .cms-added-card figcaption strong { margin-bottom: 3px; }
+
+.cms-creative-embed { width: 100%; min-width: 0; overflow: hidden; }
+.cms-creative-embed iframe, .cms-creative-embed video { display: block; min-height: 240px; }
+@media (max-width: 700px) { .cms-creative-embed iframe, .cms-creative-embed video { min-height: 200px; } }
+.cms-feature-embed{grid-column:1/-1;width:100%;min-width:0;overflow:hidden}.cms-feature-embed iframe,.cms-feature-embed video{display:block;width:100%;min-height:240px;border:0}@media(max-width:700px){.cms-feature-embed iframe,.cms-feature-embed video{min-height:200px}}
+.cms-custom-content.cms-embed-only{grid-template-columns:minmax(0,1fr)}.cms-custom-content.cms-embed-only>.cms-creative-embed{grid-column:1/-1}
