@@ -1,6 +1,9 @@
 (() => {
   const page = location.pathname.split('/').pop() || 'index.html';
-  const isEditor = new URLSearchParams(location.search).has('cmsEdit');
+  const params = new URLSearchParams(location.search);
+  const isEditor = params.has('cmsEdit');
+  const apiOrigin = params.get('cmsApi') || (location.hostname === '127.0.0.1' ? location.origin : 'https://shivshakti-cms.onrender.com');
+  const parentOrigin = params.get('cmsParent') || location.origin;
   const editable = 'h1,h2,h3,h4,p,li,a,button,figcaption,small,strong,img,video';
   const selectorFor = (el) => {
     if (el.id) return `#${CSS.escape(el.id)}`;
@@ -116,9 +119,9 @@
     (pageData.__removedCards || []).forEach(key => { const card = originalCards.get(key); if (card) card.hidden = true; });
     removeSections(pageData.__removedSections || []);
   };
-  const message = (type, extra = {}) => parent.postMessage({ source: 'shivshakti-cms', type, page, ...extra }, location.origin);
+  const message = (type, extra = {}) => parent.postMessage({ source: 'shivshakti-cms', type, page, ...extra }, parentOrigin);
 
-  fetch('/api/content').then(r => r.ok ? r.json() : {}).then(data => renderPageState(data?.[page])).catch(() => {});
+  fetch(`${apiOrigin}/api/content`, { credentials: 'include' }).then(r => r.ok ? r.json() : {}).then(data => renderPageState(data?.[page])).catch(() => {});
   if (!isEditor) return;
   document.body.classList.add('cms-editing');
   document.addEventListener('click', (event) => {
@@ -150,7 +153,7 @@
     });
   }, true);
   window.addEventListener('message', (event) => {
-    if (event.origin !== location.origin || event.data?.source !== 'shivshakti-cms-editor') return;
+    if (event.origin !== parentOrigin || event.data?.source !== 'shivshakti-cms-editor') return;
     if (event.data.type === 'update') applyOne(event.data.key, event.data.record);
     if (event.data.type === 'render-state') renderPageState(event.data.pageData);
     if (event.data.type === 'reload') location.reload();

@@ -1,23 +1,21 @@
 # Shivshakti Furnitures website
 
-## Public website deployment
+## Public website and hosted content editor
 
-This project is prepared for a Render Static Site. The `render.yaml` blueprint runs `build_public.py` and publishes the generated `public/` folder. The public build contains the customer-facing pages and removes the local editor and its Admin link. That keeps the private, unauthenticated local CMS out of the public deployment.
+The Render Blueprint in `render.yaml` deploys two services:
 
-After the repository is pushed to GitHub:
+- `shivshakti-furnitures` serves the public website.
+- `shivshakti-cms` provides a protected editor and stores changes on a persistent disk.
 
-1. Sign in to Render and choose **New → Blueprint**.
-2. Connect the `shivshakti-furnitures` GitHub repository.
-3. Confirm the service named `shivshakti-furnitures` and deploy it.
-4. Render will provide the public `onrender.com` address and redeploy on later pushes.
+The public website includes an **Admin** link in its footer. The editor is available at `https://shivshakti-cms.onrender.com/cms.html`. Admin credentials are configured as private environment variables when the CMS service is created; they are not stored in the site files. The editor supports text, image and video URL edits, product card add/edit/remove, section add/remove, page reset, and JSON backup import/export. Save changes to publish them to the public site.
+
+The CMS service uses Render's paid Starter web service and a 1 GB persistent disk so changes survive redeploys. The public site remains a static site.
 
 ## Local content editor
 
-To edit this website on this computer, double-click `start-cms.bat`. The editor opens at `http://127.0.0.1:8765/cms.html`. Keep its minimized server window open. Choose a page, click text, images, videos, links, or a product card in the preview, then edit its fields. Product Card tools can edit, remove, or add a card in the same gallery. The Add Content panel can create a new section. Click **Save changes** when finished.
+To edit on this computer, double-click `start-cms.bat`. The editor opens at `http://127.0.0.1:8765/cms.html`. Keep its minimized server window open. Choose a page, click text, images, videos, links, or a product card in the preview, then edit its fields. Click **Save changes** when finished.
 
-Local edits are saved in `site-content.json`, which is intentionally excluded from Git. The current Render static deployment publishes the website content from the HTML source; the local editor and its saved data are not available on the public server. Hosting an editable public CMS needs a protected login and persistent storage configured for that Render service.
-
-Use **Export backup** in the editor to keep a copy of your local content changes.
+Local edits are saved in `site-content.json`, which is intentionally excluded from Git. Use **Export backup** in the editor to keep a copy of your content changes.
 
 ## Website pages
 

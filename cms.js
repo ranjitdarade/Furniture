@@ -20,15 +20,18 @@ const removeCardBtn = document.querySelector('#removeCardBtn');
 let data = {};
 let selected = null;
 let connected = false;
+const isHostedAdmin = location.hostname === 'shivshakti-cms.onrender.com';
+const previewOrigin = isHostedAdmin ? 'https://shivshakti-furnitures.onrender.com' : location.origin;
+const apiOrigin = location.origin;
 const pageKey = () => pageSelect.value;
 const setStatus = (message, kind = '') => { status.textContent = message; status.className = `cms-status ${kind}`; };
 const parseBackground = (value = '') => value.match(/^url\(["']?(.*?)["']?\)$/)?.[1] || value;
 const updatePreview = () => {
   if (!selected || !preview.contentWindow) return;
-  preview.contentWindow.postMessage({ source: 'shivshakti-cms-editor', type: 'update', key: selected.key, record: selected.record }, location.origin);
+  preview.contentWindow.postMessage({ source: 'shivshakti-cms-editor', type: 'update', key: selected.key, record: selected.record }, previewOrigin);
 };
 const updatePagePreview = () => {
-  preview.contentWindow?.postMessage({ source: 'shivshakti-cms-editor', type: 'render-state', pageData: data[pageKey()] || {} }, location.origin);
+  preview.contentWindow?.postMessage({ source: 'shivshakti-cms-editor', type: 'render-state', pageData: data[pageKey()] || {} }, previewOrigin);
 };
 const resetFields = () => {
   selected = null;
@@ -44,7 +47,12 @@ const resetFields = () => {
 };
 const loadPreview = () => {
   resetFields();
-  preview.src = `${pageKey()}?cmsEdit=1&v=${Date.now()}`;
+  const previewUrl = new URL(`${previewOrigin}/${pageKey()}`);
+  previewUrl.searchParams.set('cmsEdit', '1');
+  previewUrl.searchParams.set('cmsApi', apiOrigin);
+  previewUrl.searchParams.set('cmsParent', location.origin);
+  previewUrl.searchParams.set('v', Date.now());
+  preview.src = previewUrl.href;
   document.querySelector('#previewHint').textContent = `Editing ${pageNames[pageKey()]}`;
 };
 async function saveData(showMessage = true) {
@@ -98,7 +106,7 @@ function saveField(field) {
   setStatus('Unsaved change — choose Save changes to keep it.', '');
 }
 window.addEventListener('message', (event) => {
-  if (event.origin !== location.origin || event.source !== preview.contentWindow || event.data?.source !== 'shivshakti-cms') return;
+  if (event.origin !== previewOrigin || event.source !== preview.contentWindow || event.data?.source !== 'shivshakti-cms') return;
   if (event.data.type === 'ready') document.querySelector('#previewHint').textContent = `Click an item to edit · ${pageNames[pageKey()]}`;
   if (event.data.type === 'selection') populateSelection(event.data);
 });
@@ -208,7 +216,16 @@ document.querySelector('#importFile').addEventListener('change', async (event) =
     loadPreview();
     return;
   }
-  try { const response = await fetch('/api/content'); if (!response.ok) throw new Error('Local CMS server was not found.'); data = await response.json(); connected = true; setStatus('Connected. Select any text, image, video, or link in the preview to edit it.', 'saved'); }
-  catch (error) { setStatus(`Could not connect to the local CMS server (${error.message}). Close this page, double-click start-cms.bat, and use the editor window it opens.`, 'error'); }
+  try {
+    if (isHostedAdmin) {
+      const session = await fetch('/api/session', { credentials: 'include' });
+      if (!session.ok || !(await session.json()).authenticated) { location.assign('/cms.html'); return; }
+    }
+    const response = await fetch('/api/content', { credentials: 'include' });
+    if (!response.ok) throw new Error(isHostedAdmin ? 'Could not load saved website content.' : 'Local CMS server was not found.');
+    data = await response.json(); connected = true;
+    setStatus('Connected. Select any text, image, video, or link in the preview to edit it.', 'saved');
+  }
+  catch (error) { setStatus(`Could not connect to the CMS server (${error.message}).`, 'error'); }
   loadPreview();
 })();
