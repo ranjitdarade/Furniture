@@ -24,7 +24,10 @@
       "original:body>main:nth-of-type(1)>section:nth-of-type(9)",
       "original:body>main:nth-of-type(1)>section:nth-of-type(10)",
       "original:#contact"
-    ]
+    ],
+    "body>main:nth-of-type(1)>section:nth-of-type(1)>h1:nth-of-type(1)": {
+      "text": ""
+    }
   },
   "seating-room.html": {
     "body>main:nth-of-type(1)>section:nth-of-type(2)>div:nth-of-type(1)>figure:nth-of-type(1)>div:nth-of-type(1)>img:nth-of-type(1)": {
@@ -42,6 +45,24 @@
     "body>main:nth-of-type(1)>section:nth-of-type(6)>div:nth-of-type(1)>figure:nth-of-type(1)>div:nth-of-type(1)>img:nth-of-type(1)": {
       "src": "https://images.openai.com/static-rsc-4/VshDgQOjDl_E9FnIXETDSuDIxyiI4s4D586H9s3is5z7UEq5SmpS20zuUna2Pw19K3zqXhzIRfWsjad7aDWLA8no1UM4cA1AG_7Pr5A_3QbQ4G5VSe_SuQt_08BycUhqV-s6_LqCgBpw7bfwTFcLs8ZrXJC5WqT92sxANeAhwSUSS_Bta3xyqQ4geG9pd8pE?purpose=fullsize",
       "alt": "Large sectional sofa for a living room"
+    }
+  },
+  "workspace.html": {
+    "body>main:nth-of-type(1)>section:nth-of-type(2)>div:nth-of-type(1)>figure:nth-of-type(1)>div:nth-of-type(1)>img:nth-of-type(1)": {
+      "src": "https://images.openai.com/static-rsc-4/jM2gIt7Y8WT7N9fdjWEeOEbmzBwokn2h_QUe1ykyX_mNnyjzPPK5sA7_ROK3oZ0SsI_sBp5NoHaXvA1VscIBHT76mo-XsH6GYyMusqxNVRqwkIO5K9ZMoKnoxuzi--PcMAhd1MA8yfuPIV3jpO2imtlK5mRr-h9vGQiwU_3YELMU6pAo8V5wjiI1egbxUvQP?purpose=fullsize",
+      "alt": "Open-plan office workstations"
+    },
+    "body>main:nth-of-type(1)>section:nth-of-type(2)>div:nth-of-type(1)>figure:nth-of-type(4)>div:nth-of-type(1)>img:nth-of-type(1)": {
+      "src": "https://images.openai.com/static-rsc-4/Iu29UfOMMRjPtV0mwSQmAIDzKFvq_yJGIhF7_CyTezThpDpQEozE2CB9lUN77FHRUYzKg15HZsfXkF-yqvtJ4EvAnhDna0lOy3udr6mX-rxE5V2_FrYzaFXj3oGBvecX0td2_LmB9i6ujpN5c1L2JqfJOeNKYq7xVlaNinoS_dy2ieHJl5Uzx3ZN7H8Sk_ZO?purpose=fullsize",
+      "alt": "Office storage and shared workspace"
+    },
+    "body>main:nth-of-type(1)>section:nth-of-type(2)>div:nth-of-type(1)>figure:nth-of-type(2)>div:nth-of-type(1)>img:nth-of-type(1)": {
+      "src": "https://images.openai.com/static-rsc-4/ylE2hKuGFZAxPKkmgdJ7HxGI-GVElhSahuRWuvs3J6HDcl6cddZGgbhsmmtLkcPfYRUp6eyCaiU_vLdmHb6FYiTsFqhz1FY1-vditGSSyPOiyBpHWLWXnIACdeazs2jELmvRyorYcQx1aT8AbUCpxMfGsVJI75SHfHA-yjXT7QOZh1f8ztDuEUuvOhYzVPM7?purpose=fullsize",
+      "alt": "Collaborative work tables in an office"
+    },
+    "body>main:nth-of-type(1)>section:nth-of-type(2)>div:nth-of-type(1)>figure:nth-of-type(3)>div:nth-of-type(1)>img:nth-of-type(1)": {
+      "src": "https://images.openai.com/static-rsc-4/0HepfzDD6wblVcZJH1GgbDpGIKpZ01C0_JifbF5bE1Z7aqOKS3B8AGtBZ59RBtGLcAKaV1ZYhaiWax7cKLLYSRTlHWbB8I1ylsgOqlDu_VcX6P8BX4H49o3qKrgmLeyPqbF2g3Ng9_z_g9Dcu-0xgOLMUVH__0NC4-7NNqwFQg5InTRXBk9TxboxWqtSnMUG?purpose=fullsize",
+      "alt": "Modern conference table and chairs"
     }
   }
 }
