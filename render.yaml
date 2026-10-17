@@ -4,25 +4,33 @@ services:
     runtime: static
     buildCommand: python build_public.py
     staticPublishPath: ./public
+    buildFilter:
+      ignoredPaths:
+        - site-content.json
   - type: web
     name: shivshakti-cms
     runtime: python
-    plan: starter
+    plan: free
     buildCommand: python build_public.py
     startCommand: python server.py
-    disk:
-      name: cms-content
-      mountPath: /var/data
-      sizeGB: 1
+    buildFilter:
+      ignoredPaths:
+        - site-content.json
     envVars:
       - key: CMS_REQUIRE_AUTH
         value: "true"
-      - key: CMS_DATA_FILE
-        value: /var/data/site-content.json
       - key: CMS_ADMIN_ORIGIN
         value: https://shivshakti-cms.onrender.com
       - key: CMS_PUBLIC_ORIGIN
         value: https://shivshakti-furnitures.onrender.com
+      - key: GITHUB_REPOSITORY
+        value: ranjitdarade/Furniture
+      - key: GITHUB_CONTENT_PATH
+        value: site-content.json
+      - key: GITHUB_BRANCH
+        value: main
+      - key: GITHUB_TOKEN
+        sync: false
       - key: ADMIN_USERNAME
         sync: false
       - key: ADMIN_PASSWORD

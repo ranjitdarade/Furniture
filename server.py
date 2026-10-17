@@ -8,6 +8,10 @@ import os
 import secrets
 import threading
 import time
+import base64
+import urllib.error
+import urllib.parse
+import urllib.request
 
 ROOT = Path(__file__).resolve().parent
 PUBLIC_DIR = ROOT / "public"
@@ -22,6 +26,86 @@ ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
 ADMIN_ORIGIN = os.environ.get("CMS_ADMIN_ORIGIN", "").rstrip("/")
 PUBLIC_ORIGIN = os.environ.get("CMS_PUBLIC_ORIGIN", "").rstrip("/")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY", "ranjitdarade/Furniture")
+GITHUB_CONTENT_PATH = os.environ.get("GITHUB_CONTENT_PATH", "site-content.json").strip("/")
+GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
+
+
+def github_request(method, url, payload=None):
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "Shivshakti-Furniture-CMS",
+    }
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8") if payload is not None else None
+    if body is not None:
+        headers["Content-Type"] = "application/json"
+    request = urllib.request.Request(url, data=body, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(request, timeout=25) as response:
+            raw = response.read()
+            return response.status, json.loads(raw) if raw else {}
+    except urllib.error.HTTPError as exc:
+        raw = exc.read()
+        try:
+            details = json.loads(raw) if raw else {}
+        except json.JSONDecodeError:
+            details = {}
+        return exc.code, details
+
+
+def github_content_url():
+    repo = urllib.parse.quote(GITHUB_REPOSITORY, safe="/")
+    path = urllib.parse.quote(GITHUB_CONTENT_PATH, safe="/")
+    return f"https://api.github.com/repos/{repo}/contents/{path}"
+
+
+def read_content():
+    if not GITHUB_TOKEN:
+        return DATA_FILE.read_bytes() if DATA_FILE.exists() else b"{}"
+    status, result = github_request("GET", f"{github_content_url()}?ref={urllib.parse.quote(GITHUB_BRANCH)}")
+    if status == 404:
+        return b"{}"
+    if status != 200:
+        raise RuntimeError(f"GitHub content read failed ({status}): {result.get('message', 'request rejected')}")
+    content = result.get("content", "")
+    if result.get("encoding") == "base64" and content:
+        return base64.b64decode(content).rstrip(b"\n")
+    blob_sha = result.get("sha")
+    if not blob_sha:
+        raise RuntimeError("GitHub did not return the website content file.")
+    repo = urllib.parse.quote(GITHUB_REPOSITORY, safe="/")
+    _, blob = github_request("GET", f"https://api.github.com/repos/{repo}/git/blobs/{blob_sha}")
+    if blob.get("encoding") != "base64" or not blob.get("content"):
+        raise RuntimeError("GitHub could not return the saved website content.")
+    return base64.b64decode(blob["content"]).rstrip(b"\n")
+
+
+def save_content(data):
+    if not GITHUB_TOKEN:
+        DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
+        temp_file = DATA_FILE.with_suffix(".json.tmp")
+        temp_file.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(temp_file, DATA_FILE)
+        return
+
+    url = github_content_url()
+    status, result = github_request("GET", f"{url}?ref={urllib.parse.quote(GITHUB_BRANCH)}")
+    if status not in (200, 404):
+        raise RuntimeError(f"GitHub content read failed ({status}): {result.get('message', 'request rejected')}")
+    encoded = base64.b64encode(json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")).decode("ascii")
+    commit = {
+        "message": "Update website content from CMS",
+        "content": encoded,
+        "branch": GITHUB_BRANCH,
+    }
+    if status == 200 and result.get("sha"):
+        commit["sha"] = result["sha"]
+    saved_status, saved_result = github_request("PUT", url, commit)
+    if saved_status not in (200, 201):
+        raise RuntimeError(f"GitHub content save failed ({saved_status}): {saved_result.get('message', 'request rejected')}")
 
 sessions = {}
 failed_logins = {}
@@ -135,10 +219,14 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_json(200, {"authenticated": is_authenticated(self)})
             return
         if path == "/api/content":
+            if HOSTED and not GITHUB_TOKEN:
+                self.send_json(503, {"error": "Content storage is not configured. Add the GITHUB_TOKEN secret to the CMS service."})
+                return
             try:
-                payload = DATA_FILE.read_bytes() if DATA_FILE.exists() else b"{}"
-            except OSError:
-                self.send_json(500, {"error": "Content storage is unavailable."})
+                payload = read_content()
+            except (OSError, RuntimeError) as exc:
+                print(f"CMS content read failed: {exc}")
+                self.send_json(503, {"error": "Could not read saved website content from GitHub. Check the CMS token and repository permissions."})
                 return
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -229,6 +317,9 @@ class Handler(SimpleHTTPRequestHandler):
         if HOSTED and (not is_authenticated(self) or not self.origin_is_admin()):
             self.send_json(401, {"error": "Please sign in to save website changes."})
             return
+        if HOSTED and not GITHUB_TOKEN:
+            self.send_json(503, {"error": "Content storage is not configured. Add the GITHUB_TOKEN secret to the CMS service."})
+            return
         try:
             length = int(self.headers.get("Content-Length", "0"))
             if length <= 0 or length > MAX_BODY:
@@ -238,17 +329,20 @@ class Handler(SimpleHTTPRequestHandler):
             if not isinstance(data, dict) or any(not isinstance(value, dict) for value in data.values()):
                 self.send_json(400, {"error": "Expected a page-to-content map."})
                 return
-            DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
-            temp_file = DATA_FILE.with_suffix(".json.tmp")
-            temp_file.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-            os.replace(temp_file, DATA_FILE)
+            save_content(data)
             self.send_json(200, {"saved": True})
         except (ValueError, OSError) as exc:
             self.send_json(400, {"error": str(exc)})
+        except RuntimeError as exc:
+            print(f"CMS content save failed: {exc}")
+            status = 409 if "(409)" in str(exc) or "(422)" in str(exc) else 503
+            self.send_json(status, {"error": "GitHub rejected the save. Check that the token has Contents read and write access to the configured repository."})
 
 
 if __name__ == "__main__":
     if HOSTED and (not ADMIN_ORIGIN or not PUBLIC_ORIGIN):
         raise RuntimeError("CMS_ADMIN_ORIGIN and CMS_PUBLIC_ORIGIN must be configured for hosted CMS use.")
+    if HOSTED and not GITHUB_TOKEN:
+        print("GITHUB_TOKEN is not set; hosted CMS content reads and saves will be unavailable until configured.")
     print(f"Shivshakti CMS server listening on {HOST}:{PORT}")
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()

@@ -59,7 +59,10 @@ async function saveData(showMessage = true) {
   if (!connected) { setStatus('Start the local CMS with start-cms.bat before saving.', 'error'); return false; }
   try {
     const response = await fetch('/api/content', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-    if (!response.ok) throw new Error(`Save failed (${response.status})`);
+    if (!response.ok) {
+      const result = await response.json().catch(() => ({}));
+      throw new Error(result.error || `Save failed (${response.status})`);
+    }
     if (showMessage) setStatus('Saved. Your site pages will show the updated content.', 'saved');
     return true;
   } catch (error) { setStatus(`Could not save: ${error.message}`, 'error'); return false; }
@@ -222,7 +225,10 @@ document.querySelector('#importFile').addEventListener('change', async (event) =
       if (!session.ok || !(await session.json()).authenticated) { location.assign('/cms.html'); return; }
     }
     const response = await fetch('/api/content', { credentials: 'include' });
-    if (!response.ok) throw new Error(isHostedAdmin ? 'Could not load saved website content.' : 'Local CMS server was not found.');
+    if (!response.ok) {
+      const result = await response.json().catch(() => ({}));
+      throw new Error(result.error || (isHostedAdmin ? 'Could not load saved website content.' : 'Local CMS server was not found.'));
+    }
     data = await response.json(); connected = true;
     setStatus('Connected. Select any text, image, video, or link in the preview to edit it.', 'saved');
   }
