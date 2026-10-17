@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: shivshakti-furnitures
+    runtime: static
+    buildCommand: python build_public.py
+    staticPublishPath: ./public
