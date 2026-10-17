@@ -3,5 +3,23 @@
     "body>main:nth-of-type(1)>section:nth-of-type(1)>h1:nth-of-type(1)": {
       "text": ""
     }
+  },
+  "seating-room.html": {
+    "body>main:nth-of-type(1)>section:nth-of-type(2)>div:nth-of-type(1)>figure:nth-of-type(1)>div:nth-of-type(1)>img:nth-of-type(1)": {
+      "src": "https://images.openai.com/static-rsc-4/VshDgQOjDl_E9FnIXETDSuDIxyiI4s4D586H9s3is5z7UEq5SmpS20zuUna2Pw19K3zqXhzIRfWsjad7aDWLA8no1UM4cA1AG_7Pr5A_3QbQ4G5VSe_SuQt_08BycUhqV-s6_LqCgBpw7bfwTFcLs8ZrXJC5WqT92sxANeAhwSUSS_Bta3xyqQ4geG9pd8pE?purpose=fullsize",
+      "alt": "Contemporary upholstered armchair"
+    },
+    "body>main:nth-of-type(1)>section:nth-of-type(6)>div:nth-of-type(1)>figure:nth-of-type(5)>div:nth-of-type(1)>img:nth-of-type(1)": {
+      "src": "https://images.openai.com/static-rsc-4/VshDgQOjDl_E9FnIXETDSuDIxyiI4s4D586H9s3is5z7UEq5SmpS20zuUna2Pw19K3zqXhzIRfWsjad7aDWLA8no1UM4cA1AG_7Pr5A_3QbQ4G5VSe_SuQt_08BycUhqV-s6_LqCgBpw7bfwTFcLs8ZrXJC5WqT92sxANeAhwSUSS_Bta3xyqQ4geG9pd8pE?purpose=fullsize",
+      "alt": "Large corner sofa with chaise"
+    },
+    "body>main:nth-of-type(1)>section:nth-of-type(6)>div:nth-of-type(1)>figure:nth-of-type(3)>div:nth-of-type(1)>img:nth-of-type(1)": {
+      "src": "https://images.openai.com/static-rsc-4/VshDgQOjDl_E9FnIXETDSuDIxyiI4s4D586H9s3is5z7UEq5SmpS20zuUna2Pw19K3zqXhzIRfWsjad7aDWLA8no1UM4cA1AG_7Pr5A_3QbQ4G5VSe_SuQt_08BycUhqV-s6_LqCgBpw7bfwTFcLs8ZrXJC5WqT92sxANeAhwSUSS_Bta3xyqQ4geG9pd8pE?purpose=fullsize",
+      "alt": "U-shaped sectional seating"
+    },
+    "body>main:nth-of-type(1)>section:nth-of-type(6)>div:nth-of-type(1)>figure:nth-of-type(1)>div:nth-of-type(1)>img:nth-of-type(1)": {
+      "src": "https://images.openai.com/static-rsc-4/VshDgQOjDl_E9FnIXETDSuDIxyiI4s4D586H9s3is5z7UEq5SmpS20zuUna2Pw19K3zqXhzIRfWsjad7aDWLA8no1UM4cA1AG_7Pr5A_3QbQ4G5VSe_SuQt_08BycUhqV-s6_LqCgBpw7bfwTFcLs8ZrXJC5WqT92sxANeAhwSUSS_Bta3xyqQ4geG9pd8pE?purpose=fullsize",
+      "alt": "Large sectional sofa for a living room"
+    }
   }
 }
